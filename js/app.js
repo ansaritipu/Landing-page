@@ -12,31 +12,17 @@
  * JS Standard: ESlint
  * 
 */
-
-/**
- * Define Global Variables
- * 
-*/
 // Global variable decleared for navigation 
 const navigation = document.getElementById('navbar__list');
 // Global variable decleared for all sections 
 const sections = document.querySelectorAll('section');
-
-/**
- * End Global Variables
- * Start Helper Functions
- * 
-*/
-
-
-
 /**
  * End Helper Functions
  * Begin Main Functions
  * 
 */
 
-// build the nav
+//  the nav build
 const navigatorBuilder = () => {
     let navigationUI = '';
     // loop to iterate through different sections
@@ -65,13 +51,13 @@ const addActiveClass = (condition,section) => {
         section.style.cssText = "background-color: brown;";
     };
 };
-// removing the active class
+// remove the active class
 const removeActiveClass =(section) => {
     section.classList.remove('your-active-class');
     section.style.cssText = "background-color: steelblue;";
 };
 
-//actual function is implemeted here
+// function is implemeted 
 const sectionActivation = () => {
     sections.forEach(section => {
         const elementOffset = activeSection(section);
@@ -84,7 +70,6 @@ const sectionActivation = () => {
 
 window.addEventListener('scroll',sectionActivation);
 
-// Scroll to anchor ID using scrollTO event
 
 const scrolling = () => {
     const linkS = document.querySelectorAll('.navbar_menu a');
@@ -99,15 +84,7 @@ const scrolling = () => {
 
 scrolling();
 /**
- * End Main Functions
- * Begin Events
+ * End Main Function
+ * Begin Event
  * 
 */
-
-// Build menu 
-
-// Scroll to section on link click
-
-// Set sections as active
-
-
