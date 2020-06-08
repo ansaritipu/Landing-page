@@ -77,15 +77,3 @@ const observer = new IntersectionObserver(callback, options)
 navElements.forEach(el => {
   observer.observe(document.getElementById(el.id))
 })
-© 2020 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
