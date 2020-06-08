@@ -18,106 +18,74 @@
  *
  */
 
-let sectionData = document.querySelectorAll("section");
+const navElements = document.querySelectorAll('section')
+const navList = document.getElementById('navbar__list')
 
 /**
  * End Global Variables
- * Start Helper Functions
- *
  */
 
-// Create navigation elements
-function createNavigation() {
-    let navigationNode = document.getElementById("navbar__list");
-    for (let i = 0; i < sectionData.length; i++) {
-        navigationNode.appendChild(createNavigationItem(sectionData[i]))
+// Build menu by iterating through the navelements
+navElements.forEach(el => {
+  const navlistElement = `<li class='menu__link ${el.className}' data-link=${el.id}><a href="#${el.id}">${el.dataset.nav}</li>`
+  navList.insertAdjacentHTML('beforeend', navlistElement)
+})
+
+// Scroll to section on link click by listenting to the click-event in the navlist
+navList.addEventListener('click', e => {
+  e.preventDefault()
+  const parent = e.target.hasAttribute('data-link')
+    ? e.target
+    : e.target.parentElement
+  const elementToScrollTo = document.getElementById(parent.dataset.link)
+  elementToScrollTo.scrollIntoView({block: 'end', behavior: 'smooth'})
+})
+
+// Set section and nav link as active using the IntersectionObserver pattern
+const callback = entries => {
+  entries.forEach(entry => {
+    const navListElement = document.querySelector(
+      `.menu__link[data-link='${entry.target.id}']`,
+    )
+    const section = document.getElementById(entry.target.id)
+
+    if (entry && entry.isIntersecting) {
+      navListElement.classList.add('active')
+      section.classList.add('active')
+    } else {
+      if (navListElement.classList.contains('active')) {
+        navListElement.classList.remove('active')
+      }
+
+      if (section.classList.contains('active')) {
+        section.classList.remove('active')
+      }
     }
+  })
 }
 
-// Create navigation item
-function createNavigationItem(navigationItem) {
-    let liNode = document.createElement("LI");
-    let divNode = document.createElement("DIV");
-    divNode.classList.add("menu__link");
-    let textNode = document.createTextNode(navigationItem.dataset.nav);
-    divNode.appendChild(textNode);
-    liNode.appendChild(divNode);
-    return liNode;
+// Options for the observer. Most important is the threshold
+const options = {
+  root: null,
+  rootMargin: '0px',
+  threshold: 0.6,
 }
 
-// Get page navigation height
-function getPageHeaderHeight() {
-    return document.getElementsByClassName("page__header")[0].getBoundingClientRect().height;
-}
-
-// Set the active class on navigation item and section
-function changeActiveClass() {
-    let sections = document.getElementsByTagName("SECTION");
-    let navigationItem = document.getElementsByTagName("LI");
-    let isActiveSet = false;
-    for (let i = 0; i < sections.length; i++) {
-        let sectionBounding = sections[i].getBoundingClientRect();
-        // Calculate the height from top
-        let sectionHeight = sectionBounding.top + sectionBounding.height - getPageHeaderHeight();
-        // Set the active class to the element that is first in the viewport
-        if (isActiveSet) {
-            sections[i].removeAttribute("class");
-            navigationItem[i].childNodes[0].removeAttribute("class");
-            navigationItem[i].childNodes[0].classList.add("menu__link");
-        } else if (sectionHeight > 0) {
-            if (sections[i].classList[0] !== "your-active-class") {
-                sections[i].classList.add("your-active-class");
-            }
-            if (navigationItem[i].childNodes[0].classList[1] !== "menu__link__active") {
-                navigationItem[i].childNodes[0].classList.add("menu__link__active");
-            }
-            isActiveSet = true;
-        } else {
-            sections[i].removeAttribute("class");
-            navigationItem[i].childNodes[0].removeAttribute("class");
-            navigationItem[i].childNodes[0].classList.add("menu__link");
-        }
-    }
-}
-
-/**
- * End Helper Functions
- * Begin Main Functions
- *
- */
-
-// build the nav
-createNavigation();
-
-// Add class 'active' to section when near top of viewport
-window.onscroll = function () {
-    changeActiveClass();
-};
-
-// Scroll to anchor ID using scrollTO event
-function scrollPage(index) {
-    let sections = document.getElementsByTagName("SECTION");
-    let sectionBounding = sections[index].getBoundingClientRect();
-    let sectionHeightFromTop = sectionBounding.top - getPageHeaderHeight() + 1;
-    window.scrollBy(0, sectionHeightFromTop)
-}
-
-/**
- * End Main Functions
- * Begin Events
- *
- */
-
-// Build menu
-function addClickEventListenerToNavigationItems() {
-    let navigationItems = document.getElementsByTagName("LI");
-    for (let i = 0; i < navigationItems.length; i++) {
-        navigationItems[i].addEventListener("click", () => scrollPage(i));
-    }
-}
-
-// Scroll to section on link click
-addClickEventListenerToNavigationItems();
-
-// Set sections as active
-changeActiveClass();
+// Setting an observer with options and a callback which checks if the navelement should be active
+// support for all modern browser https://caniuse.com/#feat=intersectionobserver
+const observer = new IntersectionObserver(callback, options)
+navElements.forEach(el => {
+  observer.observe(document.getElementById(el.id))
+})
+© 2020 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
