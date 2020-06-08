@@ -1,123 +1,113 @@
 /**
- *
+ * 
  * Manipulating the DOM exercise.
  * Exercise programmatically builds navigation,
  * scrolls to anchors from navigation,
  * and highlights section in viewport upon scrolling.
- *
+ * 
  * Dependencies: None
- *
+ * 
  * JS Version: ES2015/ES6
- *
+ * 
  * JS Standard: ESlint
- *
- */
+ * 
+*/
 
 /**
  * Define Global Variables
- *
- */
-
-let sectionData = document.querySelectorAll("section");
+ * 
+*/
+// Global variable decleared for navigation 
+const navigation = document.getElementById('navbar__list');
+// Global variable decleared for all sections 
+const sections = document.querySelectorAll('section');
 
 /**
  * End Global Variables
  * Start Helper Functions
- *
- */
+ * 
+*/
 
-// Create navigation elements
-function createNavigation() {
-    let navigationNode = document.getElementById("navbar__list");
-    for (let i = 0; i < sectionData.length; i++) {
-        navigationNode.appendChild(createNavigationItem(sectionData[i]))
-    }
-}
 
-// Create navigation item
-function createNavigationItem(navigationItem) {
-    let liNode = document.createElement("LI");
-    let divNode = document.createElement("DIV");
-    divNode.classList.add("menu__link");
-    let textNode = document.createTextNode(navigationItem.dataset.nav);
-    divNode.appendChild(textNode);
-    liNode.appendChild(divNode);
-    return liNode;
-}
-
-// Get page navigation height
-function getPageHeaderHeight() {
-    return document.getElementsByClassName("page__header")[0].getBoundingClientRect().height;
-}
-
-// Set the active class on navigation item and section
-function changeActiveClass() {
-    let sections = document.getElementsByTagName("SECTION");
-    let navigationItem = document.getElementsByTagName("LI");
-    let isActiveSet = false;
-    for (let i = 0; i < sections.length; i++) {
-        let sectionBounding = sections[i].getBoundingClientRect();
-        // Calculate the height from top
-        let sectionHeight = sectionBounding.top + sectionBounding.height - getPageHeaderHeight();
-        // Set the active class to the element that is first in the viewport
-        if (isActiveSet) {
-            sections[i].removeAttribute("class");
-            navigationItem[i].childNodes[0].removeAttribute("class");
-            navigationItem[i].childNodes[0].classList.add("menu__link");
-        } else if (sectionHeight > 0) {
-            if (sections[i].classList[0] !== "your-active-class") {
-                sections[i].classList.add("your-active-class");
-            }
-            if (navigationItem[i].childNodes[0].classList[1] !== "menu__link__active") {
-                navigationItem[i].childNodes[0].classList.add("menu__link__active");
-            }
-            isActiveSet = true;
-        } else {
-            sections[i].removeAttribute("class");
-            navigationItem[i].childNodes[0].removeAttribute("class");
-            navigationItem[i].childNodes[0].classList.add("menu__link");
-        }
-    }
-}
 
 /**
  * End Helper Functions
  * Begin Main Functions
- *
- */
+ * 
+*/
 
 // build the nav
-createNavigation();
+const navigatorBuilder = () => {
+    let navigationUI = '';
+    // loop to iterate through different sections
+    sections.forEach(section => {
+        const sectionId = section.id;
+        const sectionNavigatorData = section.dataset.nav;
 
-// Add class 'active' to section when near top of viewport
-window.onscroll = function () {
-    changeActiveClass();
+        navigationUI += `<li><a class="menu__link" href="#${sectionId}">${sectionNavigatorData}</a></li>`;
+    });
+    // Here elements will be appended to the navigation section
+    navigation.innerHTML = navigationUI;
 };
 
-// Scroll to anchor ID using scrollTO event
-function scrollPage(index) {
-    let sections = document.getElementsByTagName("SECTION");
-    let sectionBounding = sections[index].getBoundingClientRect();
-    let sectionHeightFromTop = sectionBounding.top - getPageHeaderHeight() + 1;
-    window.scrollBy(0, sectionHeightFromTop)
-}
+navigatorBuilder();
 
+// Add class 'active' to section when near top of viewport
+
+const activeSection = (section) => {
+    return Math.floor(section.getBoundingClientRect().top);
+};
+
+// adding the active class
+const addActiveClass = (condition,section) => {
+    if(condition) {
+        section.classList.add('your-active-class');
+        section.style.cssText = "background-color: brown;";
+    };
+};
+// removing the active class
+const removeActiveClass =(section) => {
+    section.classList.remove('your-active-class');
+    section.style.cssText = "background-color: steelblue;";
+};
+
+//actual function is implemeted here
+const sectionActivation = () => {
+    sections.forEach(section => {
+        const elementOffset = activeSection(section);
+
+        viewPort = () => elementOffset < 180 && elementOffset >= -180;
+        removeActiveClass(section);
+        addActiveClass(viewPort(),section);
+    });
+};
+
+window.addEventListener('scroll',sectionActivation);
+
+// Scroll to anchor ID using scrollTO event
+
+const scrolling = () => {
+    const linkS = document.querySelectorAll('.navbar_menu a');
+    linkS.forEach(link => { 
+        link.addEventListener('click', () => {
+            for(i =0; i<sections; i++) {
+                sections[i].addEventListener("click",sectionScroll(link));
+            }
+        });
+    });
+};
+
+scrolling();
 /**
  * End Main Functions
  * Begin Events
- *
- */
+ * 
+*/
 
-// Build menu
-function addClickEventListenerToNavigationItems() {
-    let navigationItems = document.getElementsByTagName("LI");
-    for (let i = 0; i < navigationItems.length; i++) {
-        navigationItems[i].addEventListener("click", () => scrollPage(i));
-    }
-}
+// Build menu 
 
 // Scroll to section on link click
-addClickEventListenerToNavigationItems();
 
 // Set sections as active
-changeActiveClass();
+
+
